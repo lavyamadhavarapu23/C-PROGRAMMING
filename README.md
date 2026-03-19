@@ -694,3 +694,55 @@ int main() {
 
     return 0;
 }
+DEPTH FIRST SEARCH USING RECURSION
+#include <stdio.h>
+
+#define MAX 10
+
+int graph[MAX][MAX], visited[MAX], n;
+
+void DFS(int v) {
+    int i;
+    
+    printf("%d ", v);
+    visited[v] = 1;
+
+    for(i = 0; i < n; i++) {
+        if(graph[v][i] == 1 && visited[i] == 0) {
+            DFS(i);   // recursive call
+        }
+    }
+}
+
+int main() {
+    int i, j, start;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix:\n");
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    for(i = 0; i < n; i++)
+        visited[i] = 0;
+
+    printf("Enter starting vertex (0 to %d): ", n-1);
+    scanf("%d", &start);
+
+    printf("DFS Traversal: ");
+    DFS(start);
+
+    return 0;
+}
+INPUT:n = 4
+0 1 1 0
+1 0 0 1
+1 0 0 1
+0 1 1 0
+Start = 0
+OUTPUT:
+DFS Traversal: 0 1 3 2
