@@ -832,3 +832,153 @@ int main() {
 }
 OUTPUT:
 Maximum value = 220
+AVL TREE
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure
+typedef struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+    int height;
+} Node;
+
+// Utility: get height
+int height(Node *n) {
+    if (n == NULL)
+        return 0;
+    return n->height;
+}
+
+// Utility: max of two numbers
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Create new node
+Node* newNode(int key) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->key = key;
+    node->left = node->right = NULL;
+    node->height = 1;
+    return node;
+}
+
+// Right rotate
+Node* rightRotate(Node* y) {
+    Node* x = y->left;
+    Node* T2 = x->right;
+
+    // Rotation
+    x->right = y;
+    y->left = T2;
+
+    // Update heights
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+
+    return x;
+}
+
+// Left rotate
+Node* leftRotate(Node* x) {
+    Node* y = x->right;
+    Node* T2 = y->left;
+
+    // Rotation
+    y->left = x;
+    x->right = T2;
+
+    // Update heights
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+// Get balance factor
+int getBalance(Node* n) {
+    if (n == NULL)
+        return 0;
+    return height(n->left) - height(n->right);
+}
+
+// Insert node
+Node* insert(Node* node, int key) {
+    // 1. Normal BST insertion
+    if (node == NULL)
+        return newNode(key);
+
+    if (key < node->key)
+        node->left = insert(node->left, key);
+    else if (key > node->key)
+        node->right = insert(node->right, key);
+    else // duplicates not allowed
+        return node;
+
+    // 2. Update height
+    node->height = 1 + max(height(node->left), height(node->right));
+
+    // 3. Get balance factor
+    int balance = getBalance(node);
+
+    // 4. Balance cases
+
+    // Left Left
+    if (balance > 1 && key < node->left->key)
+        return rightRotate(node);
+
+    // Right Right
+    if (balance < -1 && key > node->right->key)
+        return leftRotate(node);
+
+    // Left Right
+    if (balance > 1 && key > node->left->key) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    // Right Left
+    if (balance < -1 && key < node->right->key) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+// Preorder traversal
+void preOrder(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->key);
+        preOrder(root->left);
+        preOrder(root->right);
+    }
+}
+
+// Main function
+int main() {
+    Node* root = NULL;
+
+    // Insert elements
+    root = insert(root, 10);
+    root = insert(root, 20);
+    root = insert(root, 30);
+    root = insert(root, 40);
+    root = insert(root, 50);
+    root = insert(root, 25);
+
+    printf("Preorder traversal of AVL tree:\n");
+    preOrder(root);
+
+    return 0;
+}
+INSERTED VALUES:
+10, 20, 30, 40, 50, 25
+TREE:
+        30
+       /  \
+     20    40
+    /  \     \
+   10  25     50
